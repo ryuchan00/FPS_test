@@ -65,6 +65,11 @@ AFPSProjectile::AFPSProjectile()
 	// Event called when component hits something.
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AFPSProjectile::OnHit);
 
+	// find sound
+	static ConstructorHelpers::FObjectFinder< USoundBase > find_sound(TEXT("'/Game/Sound/shot.shot'"));
+	if (find_sound.Succeeded()) {
+		Sound_Obj = find_sound.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +90,9 @@ void AFPSProjectile::Tick(float DeltaTime)
 void AFPSProjectile::FireInDirection(const FVector& ShootDirection)
 {
 	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
+
+	// 再生(7番目の引き数でオーナーアクターを自分に)
+	UGameplayStatics::PlaySound2D(GetWorld(), Sound_Obj, 1.0f, 1.0f, 0.0f, nullptr, this);
 }
 
 // Function that is called when the projectile hits something.

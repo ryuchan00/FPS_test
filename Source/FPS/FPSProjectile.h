@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "FPSProjectile.generated.h"
 
 UCLASS()
@@ -47,5 +48,8 @@ public:
     // Function that is called when the projectile hits something.
     UFUNCTION()
     void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+    UPROPERTY()
+    USoundBase* Sound_Obj;
 
 };
