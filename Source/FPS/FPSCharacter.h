@@ -26,6 +26,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AFPSProjectile> ProjectileClass;
 
+	//Sets Character Movement Speed to Sprint values.
+	void BeginSprint();
+
+	void WhileSprint();
+
+	//Sets Character Movement Speed back to default speed values.
+	void EndSprint();
 
 public:
 	// Called every frame
@@ -66,4 +73,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FVector MuzzleOffset;
 
+	UPROPERTY()
+	USoundBase* Sound_Obj;
 };

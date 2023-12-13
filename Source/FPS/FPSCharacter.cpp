@@ -2,6 +2,9 @@
 
 
 #include "FPSCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AFPSCharacter::AFPSCharacter()
@@ -38,6 +41,16 @@ AFPSCharacter::AFPSCharacter()
 
 	// The owning player doesn't see the regular (third-person) body mesh.
 	GetMesh()->SetOwnerNoSee(true);
+
+	static ConstructorHelpers::FObjectFinder< USoundBase > find_sound(TEXT("'/Game/Sound/jump.jump'"));
+	if (find_sound.Succeeded()) {
+		Sound_Obj = find_sound.Object;
+	}
+
+	//Setting class variables of the Character movement component
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bIgnoreBaseRotation = true;
 }
 
 // Called when the game starts or when spawned
@@ -56,7 +69,6 @@ void AFPSCharacter::BeginPlay()
 void AFPSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -79,6 +91,10 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	// bind fire action
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AFPSCharacter::Fire);
 
+	// Sprint while run
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AFPSCharacter::BeginSprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Repeat, this, &AFPSCharacter::WhileSprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AFPSCharacter::EndSprint);
 }
 
 void AFPSCharacter::MoveForward(float Value)
@@ -98,6 +114,9 @@ void AFPSCharacter::MoveRight(float Value)
 void AFPSCharacter::StartJump()
 {
 	bPressedJump = true;
+	// 再生(7番目の引き数でオーナーアクターを自分に)
+	UGameplayStatics::PlaySound2D(GetWorld(), Sound_Obj, 1.0f, 1.0f, 0.0f, nullptr, this);
+	
 }
 
 void AFPSCharacter::StopJump()
@@ -143,3 +162,20 @@ void AFPSCharacter::Fire()
 		}
 	}
 }
+
+void AFPSCharacter::BeginSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 4000.0f;
+	GEngine->AddOnScreenDebugMessage(-2, 0.1f, FColor::Red, TEXT("While Dash !!"));
+}
+
+void AFPSCharacter::WhileSprint()
+{
+	GEngine->AddOnScreenDebugMessage(-2, 0.1f, FColor::Red, TEXT("While Dash !!"));
+}
+
+void AFPSCharacter::EndSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+}
+
